@@ -4,6 +4,26 @@ class Round
   def initialize(deck)
     @deck = deck
     @turns = []
+    @categories = deck.cards.map { |card| card.category }.uniq
+  end
+
+  def start
+    until deck.cards.empty?
+      puts current_card.question
+      guess = gets.chomp
+      turn = take_turn(guess)
+      puts turn.feedback
+    end
+    finish
+  end
+
+  def finish
+    puts "****** Game over! ******"
+    puts "You had #{number_correct} correct answers out of #{turns.count} for a total score of #{percent_correct}%."
+
+    @categories.each do |category|
+      puts "#{category} - #{percent_correct_by_category(category)}% correct"
+    end
   end
 
   def current_card
@@ -26,14 +46,14 @@ class Round
   end
 
   def percent_correct
-    (number_correct.to_f / turns.count.to_f) * 100
+    (number_correct.to_f / turns.count.to_f).round(2) * 100
   end
 
   def percent_correct_by_category(category)
     correct = number_correct_by_category(category)
     total = turns_in_category(category).count
 
-    (correct.to_f / total.to_f) * 100
+    (correct.to_f / total.to_f).round(2) * 100
   end
 
   private
@@ -43,5 +63,6 @@ class Round
       turn.card.category == category
     end
   end
+
 end
 
